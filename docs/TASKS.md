@@ -48,7 +48,7 @@ Status: `[ ]` not started · `[~]` in progress · `[x]` done. One task at a time
 
 ## Phase 2 — Retrieval foundation
 
-### [ ] T006 Embeddings
+### [x] T006 Embeddings
 - **Objective:** Generate embeddings for chunks via the Gemini embedding API.
 - **Dependencies:** T005.
 - **Files:** `src/sourcex/retrieval/embeddings.py`.

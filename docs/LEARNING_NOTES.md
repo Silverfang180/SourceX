@@ -32,7 +32,12 @@ Entry format once expanded: (1) what it is, (2) why SourceX needs it, (3) how th
     * `page_number` — 1-indexed human-readable page
     * `chunk_index` — deterministic chunk position
     This is what rides through to the final LLM prompt for citations.
-- T006–T009 — embeddings, FAISS, retrieval, basic generation mechanics
+- **T006 Embeddings:**
+  - *SDK Choice:* Upgraded to the modern `google-genai` SDK rather than the legacy `google-generativeai`.
+  - *Model:* `gemini-embedding-2` with 768 dimensions. We encode chunks as "title: none | text: {chunk_text}" as required by the model.
+  - *Architecture:* Created `src/sourcex/retrieval/embeddings.py` mapping `Chunk` to a new `EmbeddedChunk` dataclass. Used mocking in tests to prevent live API calls.
+  - *Error Handling:* Caught raw `google.genai.errors.APIError` and wrapped it in a custom `EmbeddingError` so the rest of the application doesn't bleed SDK details.
+- T007–T009 — FAISS, retrieval, basic generation mechanics
 - T010 — LangChain component-by-component mapping to the manual T001–T009 steps
 - T011–T017 — LangGraph state/nodes/conditional edges/loop termination, tool calling
 - T018 — evaluation results and what they show

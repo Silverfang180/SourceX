@@ -19,8 +19,12 @@ Owns the retrieval-side design decisions referenced from `ARCHITECTURE.md`. Fill
 - Reasoning: These fields are the absolute minimum required to link a semantic snippet back to a verifiable source document and specific location for citation generation downstream.
 
 ## Embeddings (T006)
-- Model: Gemini embedding API (specific model name via `Config`, not hardcoded).
-- TBD: dimensionality, batching approach, cost/latency notes.
+- SDK: `google-genai`
+- Model: `gemini-embedding-2` (configured via `Config` as `EMBEDDING_MODEL`).
+- Dimensionality: `768` (configured via `Config` as `EMBEDDING_DIMENSIONS`).
+- Embedding Input Representation: Document chunks are embedded using the format "title: none | text: {chunk_text}" as required by `gemini-embedding-2`. (T008 must format queries using the corresponding query instruction).
+- Error Handling: All `APIError` exceptions from the provider are caught and wrapped into a domain-specific `EmbeddingError`.
+- Limitations: API rate limits and network latency. Mocks are used for unit tests to prevent network dependency.
 
 ## Vector index & persistence strategy (T007) — important
 Render's local filesystem is **ephemeral** — anything written to disk can vanish on restart/redeploy. FAISS itself has no built-in remote persistence, so the index cannot be treated as permanent local state.

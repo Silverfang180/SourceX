@@ -1,4 +1,4 @@
-google-generativeai
+google-genai
 PyMuPDF
 faiss-cpu
 python-dotenv
