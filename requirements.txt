@@ -1,0 +1,6 @@
+google-generativeai
+PyMuPDF
+faiss-cpu
+python-dotenv
+numpy
+pytest

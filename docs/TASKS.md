@@ -6,9 +6,9 @@ Tasks are scoped to one at a time (see `DEVELOPMENT_RULES.md`). Do not start the
 
 ## Phase 1 — RAG fundamentals (Day 1)
 
-- [ ] T001 Repository foundation — project structure, dependency management (e.g. `pyproject.toml`/`requirements.txt`), environment config, `.gitignore`
-- [ ] T002 PDF text extraction — extract raw text + page numbers from a sample PDF
-- [ ] T003 Text cleaning — strip headers/footers/noise, normalize whitespace
+- [x] T001 Repository foundation — project structure, dependency management (e.g. `pyproject.toml`/`requirements.txt`), environment config, `.gitignore`
+- [x] T002 PDF text extraction — extract raw text + page numbers from a sample PDF
+- [x] T003 Text cleaning — strip headers/footers/noise, normalize whitespace
 - [ ] T004 Chunking — split cleaned text into overlapping chunks; document the chosen chunk size/overlap and why
 - [ ] T005 Metadata — attach source file, page number, and chunk index to each chunk
 - [ ] T006 Embeddings — generate embeddings for chunks using the chosen embedding model
