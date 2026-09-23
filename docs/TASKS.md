@@ -33,7 +33,7 @@ Status: `[ ]` not started · `[~]` in progress · `[x]` done. One task at a time
 ### [ ] T004 Chunking — **next**
 - **Objective:** Split cleaned per-page text into overlapping chunks suitable for embedding/retrieval.
 - **Dependencies:** T003.
-- **Files:** `src/sourcex/ingestion/chunking.py`, `tests/test_chunking.py`.
+- **Files:** `src/sourcex/chunking.py`, `tests/test_chunking.py`.
 - **Acceptance criteria:** Given cleaned page text, produces a list of chunk records `{text, page_number, chunk_index}`; chunk size and overlap are named constants with a documented rationale (in code comment or `RAG_DESIGN.md`); no chunk silently drops page attribution.
 - **Tests:** Chunk count is sane for a known input length; overlap between consecutive chunks is verified; page number is preserved per chunk.
 - **DoD:** Tests pass; chunk size/overlap choice documented in `RAG_DESIGN.md`.

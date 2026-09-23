@@ -3,7 +3,10 @@
 Owns the retrieval-side design decisions referenced from `ARCHITECTURE.md`. Filled in as each task lands — do not pre-document a decision before the task that makes it is done.
 
 ## Chunking (T004)
-- Strategy: TBD when T004 is implemented — record chosen chunk size, overlap, and splitting method (character/token-based) here, with the reasoning (why that size trades off recall vs. context-window/cost).
+- Strategy: Simple character-based sliding window (this is a simple baseline, not semantic chunking).
+- Size & Overlap: `CHUNK_SIZE = 1000` characters, `CHUNK_OVERLAP = 200` characters.
+- Reasoning: 1000 characters provides enough density for a complete thought/paragraph without exploding context windows downstream. The 200-character overlap ensures that sentences or concepts split across boundary edges are not lost, preserving retrieval context.
+- Limitations: Character-based splitting is naïve; hard character boundaries can split words/sentences mid-way. Output is deterministic and page attribution is strictly preserved.
 
 ## Metadata schema (T005)
 - Per-chunk fields: `source_file`, `page_number`, `chunk_index`, `document_id` (TBD to confirm final field set once T005 lands).

@@ -17,7 +17,11 @@ Entry format once expanded: (1) what it is, (2) why SourceX needs it, (3) how th
 - **Deferred:** working notes pending — task complete and verified, write-up not yet captured.
 
 ## Upcoming working notes (fill in as each task lands)
-- T004 Chunking — chunk size/overlap choice and why
+- **T004 Chunking:** 
+  - *What it is:* A chunk is a subset of a document's text used as a discreet unit for embedding and retrieval. 
+  - *Why it's needed:* A full page or document often exceeds LLM context windows and dilutes the embedding vector with too many unrelated concepts. Chunking narrows the focus to specific passages. 
+  - *Why page != chunk:* A page is a physical layout artifact, not a logical one. A single page might contain multiple distinct topics that need separate retrieval scores.
+  - *Approach/Trade-offs:* Chose a basic character-based window (1000 chars, 200 overlap). This is a simple baseline, not semantic chunking. It is computationally cheap and produces deterministic output while preserving page attribution. However, hard character boundaries can split words/sentences in half. Overlap is required so boundaries don't orphan critical context.
 - T005 Metadata — final schema and what rides through to citations
 - T006–T009 — embeddings, FAISS, retrieval, basic generation mechanics
 - T010 — LangChain component-by-component mapping to the manual T001–T009 steps
