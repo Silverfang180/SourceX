@@ -41,8 +41,24 @@ Entry format once expanded: (1) what it is, (2) why SourceX needs it, (3) how th
   - *Vector Engine:* Implemented exact search using `faiss-cpu` and `IndexFlatIP`. Inner Product on normalized Gemini embeddings provides exact cosine-similarity ranking.
   - *ID Mapping:* Wrapped FAISS with `IndexIDMap` to link FAISS integer IDs to our unmodified `Chunk` metadata dictionaries.
   - *Persistence:* Created `.faiss` and `metadata.json` for local development serialization. Production architecture will rely on rebuilding this cache from durable Postgres/R2 storage because of ephemeral environments.
-- T008–T009 — retrieval, basic generation mechanics
-- T010 — LangChain component-by-component mapping to the manual T001–T009 steps
+- **T008 Retrieval:**
+  - *Query Format:* `gemini-embedding-2` requires specific task prefixes for queries. We format questions as `"task: question answering | query: {query}"` without sending a `task_type` parameter to the API config.
+  - *Model Consistency:* Query inputs share the exact model (`gemini-embedding-2`) and dimensionality (`768`) as the document index, ensuring dimensional overlap.
+  - *Retriever Class:* Created `src/sourcex/retrieval/retriever.py` to handle the transition from raw user question, to embedded vector, to nearest chunks retrieved from `VectorStore`.
+- **T009 — Basic RAG Generation:**
+  - *What it is:* A baseline pipeline that connects the `SearchResult` context from the FAISS retriever into an LLM prompt.
+  - *Model:* Used `gemini-2.5-flash` for the generation step via the `google-genai` SDK.
+  - *Architecture:* Developed a function `build_prompt` to string together retrieved chunks as contextual references `[Document 1]... [Document N]` with a question-answering template. `generate_answer` calls the Gemini model synchronously.
+- **T010 — LangChain Pipeline:**
+  - *What it is:* Transitioned the manual T002–T009 workflow to use native LangChain components.
+  - *Mapping:*
+    - **T002 (Extraction):** Hand-wrapped `PyMuPDFLoader` equivalent logic via `fitz` into `langchain_core.documents.Document` with metadata mapping.
+    - **T003 (Cleaning):** Applied custom `clean_text` on chunk boundaries.
+    - **T004/T005 (Chunking/Metadata):** Replaced manual iteration with `RecursiveCharacterTextSplitter`.
+    - **T006 (Embeddings):** Transferred raw SDK logic to `GoogleGenerativeAIEmbeddings` from `langchain_google_genai`. Mapped the `title: none | text: {text}` schema via text mutation before embedding.
+    - **T007 (FAISS):** `FAISS.from_documents` from `langchain_community.vectorstores` wraps FAISS indexing and metadata mapping out-of-the-box.
+    - **T008/T009 (Retrieval/Generation):** `vectorstore.as_retriever()` + LCEL (LangChain Expression Language). Created a pipe `{"context": retriever | format_docs, "question": RunnablePassthrough()} | prompt | ChatGoogleGenerativeAI() | StrOutputParser()`.
+  - *Why this way:* Proves the framework-free approach's primitives map cleanly onto standard enterprise orchestration without "magic." The result is equivalent to the manual implementation but allows standard interoperability.
 - T011–T017 — LangGraph state/nodes/conditional edges/loop termination, tool calling
 - T018 — evaluation results and what they show
 - T019–T023 — API design, auth model, user isolation enforcement, FAISS rebuild-on-restart mechanics

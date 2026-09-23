@@ -32,11 +32,11 @@ def embed_texts(texts: List[str]) -> List[List[float]]:
         return []
 
     client = get_embedding_client()
-    
+
     try:
         # For gemini-embedding-2, document retrieval expects: "title: none | text: {text}"
         formatted_texts = [f"title: none | text: {text}" for text in texts]
-        
+
         response = client.models.embed_content(
             model=config.EMBEDDING_MODEL,
             contents=formatted_texts,
@@ -44,12 +44,12 @@ def embed_texts(texts: List[str]) -> List[List[float]]:
                 output_dimensionality=config.EMBEDDING_DIMENSIONS
             )
         )
-        
+
         # Verify the response shape matches our expectations
         if not response.embeddings or len(response.embeddings) != len(texts):
             got_count = len(response.embeddings) if response.embeddings else 0
             raise EmbeddingError(f"Expected {len(texts)} embeddings, got {got_count}")
-            
+
         vectors = []
         for emb in response.embeddings:
             if not emb.values:
@@ -57,7 +57,7 @@ def embed_texts(texts: List[str]) -> List[List[float]]:
             if len(emb.values) != config.EMBEDDING_DIMENSIONS:
                 raise EmbeddingError(f"Expected dimensionality {config.EMBEDDING_DIMENSIONS}, got {len(emb.values)}")
             vectors.append(emb.values)
-            
+
         return vectors
 
     except APIError as e:
@@ -75,8 +75,41 @@ def embed_chunks(chunks: List[Chunk]) -> List[EmbeddedChunk]:
     """
     if not chunks:
         return []
-        
+
     texts = [chunk.text for chunk in chunks]
     vectors = embed_texts(texts)
-    
+
     return [EmbeddedChunk(chunk=c, embedding=v) for c, v in zip(chunks, vectors)]
+def embed_query(query: str) -> List[float]:
+    """
+    Embeds a single user query.
+    For gemini-embedding-2, the format must be: "task: question answering | query: {query}"
+    """
+    if not query.strip():
+        raise ValueError("Query cannot be empty.")
+
+    client = get_embedding_client()
+    formatted_query = f"task: question answering | query: {query}"
+
+    try:
+        response = client.models.embed_content(
+            model=config.EMBEDDING_MODEL,
+            contents=[formatted_query],
+            config=types.EmbedContentConfig(
+                output_dimensionality=config.EMBEDDING_DIMENSIONS
+            )
+        )
+        if not response.embeddings or not response.embeddings[0].values:
+            raise EmbeddingError("Received empty embedding for query.")
+
+        vectors = response.embeddings[0].values
+        if len(vectors) != config.EMBEDDING_DIMENSIONS:
+            raise EmbeddingError(f"Expected dimensionality {config.EMBEDDING_DIMENSIONS}, got {len(vectors)}")
+
+        return vectors
+    except APIError as e:
+        raise EmbeddingError(f"Gemini API Error: {str(e)}") from e
+    except Exception as e:
+        if isinstance(e, EmbeddingError):
+            raise
+        raise EmbeddingError(f"Failed to generate embedding for query: {str(e)}") from e

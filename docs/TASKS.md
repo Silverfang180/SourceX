@@ -30,7 +30,7 @@ Status: `[ ]` not started · `[~]` in progress · `[x]` done. One task at a time
 - **Tests:** Unit tests on sample noisy text confirming expected cleanup.
 - **DoD:** Complete and verified.
 
-### [ ] T004 Chunking — **next**
+### [x] T004 Chunking
 - **Objective:** Split cleaned per-page text into overlapping chunks suitable for embedding/retrieval.
 - **Dependencies:** T003.
 - **Files:** `src/sourcex/chunking.py`, `tests/test_chunking.py`.
@@ -64,7 +64,7 @@ Status: `[ ]` not started · `[~]` in progress · `[x]` done. One task at a time
 - **Tests:** Round-trip test: build → save → load → search returns expected nearest neighbor on synthetic vectors.
 - **DoD:** Tests pass.
 
-### [ ] T008 Retrieval
+### [x] T008 Retrieval
 - **Objective:** Given a query, embed it and retrieve nearest chunks.
 - **Dependencies:** T007.
 - **Files:** `src/sourcex/retrieval/retriever.py`.
@@ -74,7 +74,7 @@ Status: `[ ]` not started · `[~]` in progress · `[x]` done. One task at a time
 
 ## Phase 3 — Basic RAG
 
-### [ ] T009 Basic RAG generation
+### [x] T009 Basic RAG generation
 - **Objective:** Assemble retrieved context into a prompt, call Gemini, return an answer.
 - **Dependencies:** T008.
 - **Files:** `src/sourcex/generation/rag.py`.
@@ -84,7 +84,7 @@ Status: `[ ]` not started · `[~]` in progress · `[x]` done. One task at a time
 
 ## Phase 4 — LangChain
 
-### [ ] T010 LangChain pipeline
+### [x] T010 LangChain pipeline
 - **Objective:** Rebuild T002–T009 using LangChain (loaders, splitters, embeddings wrapper, vector store, chain) as the pipeline genuinely used going forward.
 - **Dependencies:** T009.
 - **Files:** `src/sourcex/langchain_pipeline/`.
@@ -94,7 +94,7 @@ Status: `[ ]` not started · `[~]` in progress · `[x]` done. One task at a time
 
 ## Phase 5 — LangGraph
 
-### [ ] T011 LangGraph state & skeleton
+### [x] T011 LangGraph state & skeleton
 - **Objective:** Define the shared state object and graph skeleton (nodes/edges, no logic yet beyond passthrough).
 - **Dependencies:** T010.
 - **Files:** `src/sourcex/graph/state.py`, `src/sourcex/graph/graph.py`.
@@ -102,7 +102,7 @@ Status: `[ ]` not started · `[~]` in progress · `[x]` done. One task at a time
 - **Tests:** Graph executes without error on a sample input.
 - **DoD:** Tests pass.
 
-### [ ] T012 analyze_query + retrieve_context nodes
+### [x] T012 analyze_query + retrieve_context nodes
 - **Objective:** Implement query analysis and retrieval as real graph nodes using T010's LangChain retriever.
 - **Dependencies:** T011.
 - **Files:** graph nodes.

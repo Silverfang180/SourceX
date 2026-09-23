@@ -37,7 +37,11 @@ Render's local filesystem is **ephemeral** — anything written to disk can vani
 - This avoids introducing a hosted vector database purely to solve a deployment quirk — FAISS stays the retrieval engine; only its persistence story changes.
 
 ## Retrieval (T008)
-- Top-K similarity search; TBD: K value and similarity metric (cosine vs. L2), to be recorded once implemented.
+- **Top-K similarity search**: Retrieves the nearest chunks using FAISS `IndexFlatIP`.
+- **Query format**: SourceX uses `task: question answering | query: {query}` for `gemini-embedding-2`, enforcing an asymmetric retrieval design specifically for Q&A tasks. No `task_type` parameter is used; formatting is handled in the text directly.
+- **Model consistency**: The query and document embeddings are explicitly produced by the same `EMBEDDING_MODEL` with `EMBEDDING_DIMENSIONS` (768), ensuring dimensional compatibility.
+- **Similarity metric**: `IndexFlatIP` computes the exact inner product. Since Gemini embeddings are L2 normalized, the inner product acts exactly as Cosine Similarity. Higher scores represent higher semantic similarity.
+- **Limitations**: The orchestrator (`Retriever`) only returns vector-based similarity; there is no hybrid keyword search or cross-encoder reranking implemented yet.
 
 ## LangGraph grading & rewriting (T013–T014)
 - TBD: what "sufficient evidence" means concretely (e.g. similarity threshold, minimum chunk count) — record the actual rule once implemented, and the retry cap chosen to guarantee loop termination.
