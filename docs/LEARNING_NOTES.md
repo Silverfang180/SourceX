@@ -22,7 +22,16 @@ Entry format once expanded: (1) what it is, (2) why SourceX needs it, (3) how th
   - *Why it's needed:* A full page or document often exceeds LLM context windows and dilutes the embedding vector with too many unrelated concepts. Chunking narrows the focus to specific passages. 
   - *Why page != chunk:* A page is a physical layout artifact, not a logical one. A single page might contain multiple distinct topics that need separate retrieval scores.
   - *Approach/Trade-offs:* Chose a basic character-based window (1000 chars, 200 overlap). This is a simple baseline, not semantic chunking. It is computationally cheap and produces deterministic output while preserving page attribution. However, hard character boundaries can split words/sentences in half. Overlap is required so boundaries don't orphan critical context.
-- T005 Metadata — final schema and what rides through to citations
+- **T005 Metadata:**
+  - *What it is:* A formalized schema (using Python's `@dataclass`) that travels with each chunk of text through the entire pipeline. It provides a structured dataclass with type annotations and predictable attribute access (it does not perform runtime type validation).
+  - *Why it's needed:* Once a document is shattered into thousands of chunks and embedded in a vector database, it becomes a soup of disconnected strings. Metadata is the only way to re-attach a retrieved chunk to its original document and page to generate a citation.
+  - *Final Schema:* 
+    * `text` — chunk content
+    * `document_id` — stable document identifier
+    * `source_file` — original source filename
+    * `page_number` — 1-indexed human-readable page
+    * `chunk_index` — deterministic chunk position
+    This is what rides through to the final LLM prompt for citations.
 - T006–T009 — embeddings, FAISS, retrieval, basic generation mechanics
 - T010 — LangChain component-by-component mapping to the manual T001–T009 steps
 - T011–T017 — LangGraph state/nodes/conditional edges/loop termination, tool calling

@@ -38,7 +38,7 @@ Status: `[ ]` not started · `[~]` in progress · `[x]` done. One task at a time
 - **Tests:** Chunk count is sane for a known input length; overlap between consecutive chunks is verified; page number is preserved per chunk.
 - **DoD:** Tests pass; chunk size/overlap choice documented in `RAG_DESIGN.md`.
 
-### [ ] T005 Metadata
+### [x] T005 Metadata
 - **Objective:** Formalize the metadata schema attached to each chunk.
 - **Dependencies:** T004.
 - **Files:** metadata schema/dataclass, updated chunking output.

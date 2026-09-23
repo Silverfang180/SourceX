@@ -9,7 +9,14 @@ Owns the retrieval-side design decisions referenced from `ARCHITECTURE.md`. Fill
 - Limitations: Character-based splitting is naïve; hard character boundaries can split words/sentences mid-way. Output is deterministic and page attribution is strictly preserved.
 
 ## Metadata schema (T005)
-- Per-chunk fields: `source_file`, `page_number`, `chunk_index`, `document_id` (TBD to confirm final field set once T005 lands).
+- Strategy: Native Python `@dataclass` pairing `text` with `ChunkMetadata`. This provides a structured dataclass with type annotations and predictable attribute access (it does not perform runtime type validation).
+- Schema fields: 
+  * `text` — chunk content
+  * `document_id` — stable document identifier
+  * `source_file` — original source filename
+  * `page_number` — 1-indexed human-readable page
+  * `chunk_index` — deterministic chunk position
+- Reasoning: These fields are the absolute minimum required to link a semantic snippet back to a verifiable source document and specific location for citation generation downstream.
 
 ## Embeddings (T006)
 - Model: Gemini embedding API (specific model name via `Config`, not hardcoded).

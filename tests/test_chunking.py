@@ -69,10 +69,10 @@ def test_page_attribution_and_metadata_preservation():
     assert len(chunks) == 2
     
     for i, c in enumerate(chunks):
-        assert c["document_id"] == "doc_abc"
-        assert c["filename"] == "test.pdf"
-        assert c["page_number"] == 5
-        assert c["chunk_index"] == i
+        assert c.metadata.document_id == "doc_abc"
+        assert c.metadata.source_file == "test.pdf"
+        assert c.metadata.page_number == 5
+        assert c.metadata.chunk_index == i
 
 def test_multiple_pages():
     # E. Multiple pages
@@ -88,17 +88,17 @@ def test_multiple_pages():
     # "page t", "e two ", "o cont", "ntent"
     
     assert len(chunks) == 6
-    p1_chunks = [c for c in chunks if c["page_number"] == 1]
-    p2_chunks = [c for c in chunks if c["page_number"] == 2]
+    p1_chunks = [c for c in chunks if c.metadata.page_number == 1]
+    p2_chunks = [c for c in chunks if c.metadata.page_number == 2]
     
     assert len(p1_chunks) == 2
     assert len(p2_chunks) == 4
     
     # Verify no accidental inheritance
     for c in p1_chunks:
-        assert "one" in c["text"] or "page" in c["text"] or " e " in c["text"]
+        assert "one" in c.text or "page" in c.text or " e " in c.text
     for c in p2_chunks:
-        assert "two" in c["text"] or "page" in c["text"] or "cont" in c["text"] or "tent" in c["text"]
+        assert "two" in c.text or "page" in c.text or "cont" in c.text or "tent" in c.text
 
 def test_determinism():
     # I. Determinism
