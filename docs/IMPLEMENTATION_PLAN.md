@@ -1,63 +1,30 @@
 # IMPLEMENTATION PLAN — SourceX
 
-3-day MVP, then evaluation/production phases continue as scope allows. One phase should be solid before the next starts.
+Dependency-ordered phases. See `TASKS.md` for the task-by-task handoff with acceptance criteria; this document is the phase-level map.
 
-## Day 1 — RAG fundamentals (no framework)
+| Phase | Covers | Status |
+|---|---|---|
+| 1. Document pipeline | Repo foundation, PDF extraction, cleaning, chunking, metadata (T001–T005) | T001–T003 done, T004 next |
+| 2. Retrieval foundation | Embeddings, FAISS indexing, retrieval (T006–T008) | Not started |
+| 3. Basic RAG | Retriever + prompt + generation, no framework (T009) | Not started |
+| 4. LangChain | Real retrieval/generation pipeline via LangChain (T010) | Not started |
+| 5. LangGraph | State, conditional routing, query rewriting, context grading, generation, citation verification (T011–T017) | Not started |
+| 6. Evaluation | Small evaluation dataset + measurable checks (T018) | Not started |
+| 7. Backend/application | FastAPI endpoints, document management, auth, Postgres, user isolation, storage (T019–T023) | Not started |
+| 8. Frontend | Next.js: upload, processing status, query, citations, document management (T024) | Not started |
+| 9. Production packaging | Docker, env config, health checks, error handling (T025–T026) | Not started |
+| 10. Deployment | Vercel + Render + Supabase + R2 + Gemini (T027–T028) | Not started |
 
-**Objective:** Understand and implement RAG mechanics directly, without LangChain, so nothing later is a black box.
+## Sequencing discipline
+- One task at a time; a phase's tasks are dependency-ordered within it.
+- Do not start LangChain/LangGraph work (Phases 4–5) before the raw pipeline (Phases 1–3) is correct and tested — the whole point of building it framework-free first is to make the framework version explainable, not a shortcut.
+- Do not start Phase 7 auth/backend work assuming a UI; do not start Phase 8 frontend work against unstable APIs.
+- Phase 9–10 (Docker, deployment) come last, after the app is functionally complete — don't deploy a half-built pipeline.
 
-**Pipeline target:**
-```
-PDF → extraction → cleaning → chunking → metadata → embeddings → FAISS → retrieval → basic RAG generation
-```
-
-**Sequence:**
-1. Repository foundation (structure, env, dependency setup)
-2. PDF text extraction
-3. Text cleaning
-4. Chunking (with overlap; chunk size is a decision to make deliberately, not default blindly)
-5. Metadata attachment (source file, page, chunk index)
-6. Embedding generation
-7. FAISS indexing
-8. Semantic retrieval (query → embedding → nearest chunks)
-9. Basic RAG generation (retrieved context + question → Gemini → answer)
-
-**Explicit exclusions for Day 1:** no LangChain, no LangGraph, no frontend.
-
-## Day 2 — LangChain + LangGraph
-
-- Rebuild the Day 1 pipeline using LangChain, mapping each manual step to its LangChain equivalent
-- Introduce LangGraph state, nodes, edges, and conditional edges
-- Target workflow:
-```
-START → Analyze Query → Retrieve → Grade Evidence
-  ├── Good → Generate
-  └── Poor → Rewrite Query → Retrieve (loop) → Grade
-→ Generate → Verify Sources → END
-```
-
-## Day 3 — Portfolio-quality application
-
-- Multi-document support
-- Citations
-- Conversational context
-- Tool calling (limited, deliberate set)
-- Evaluation (initial pass)
-- FastAPI endpoints
-- Next.js UI
-- Docker
-- Tests
-- README + screenshots/demo
-- Interview preparation notes
-
-**Priority rule:** if the core (Days 1–2) is incomplete, correctness there takes priority over adding Day 3 features.
-
-## Beyond Day 3 (continued as scope allows)
-
-- **Phase 4 — Source grounding:** citations, page references, evidence verification, unsupported-answer handling
-- **Phase 5 — Tools:** calculator, document search, metadata/document inspection
-- **Phase 6 — Evaluation:** Recall@K, MRR where appropriate, answer relevance, faithfulness/groundedness, citation correctness, latency, token usage, cost
-- **Phase 7 — Production engineering:** FastAPI, PostgreSQL, Docker, Next.js, testing, logging, configuration, deployment
+## Companion documents
+- `RAG_DESIGN.md` — chunking/embedding/retrieval design and the FAISS persistence strategy under Render's ephemeral storage
+- `EVALUATION_PLAN.md` — Phase 6 evaluation approach
+- `DEPLOYMENT.md` — Phase 9–10 infrastructure detail
 
 ## Current status
-Planning stage complete for Day 1. No implementation started. Next concrete step is `T001 Repository foundation` in `TASKS.md`.
+T001–T003 complete and verified. T004 — Chunking is the active task (Phase 1).

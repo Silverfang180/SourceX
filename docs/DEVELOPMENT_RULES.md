@@ -1,54 +1,42 @@
 # DEVELOPMENT RULES — SourceX
 
+## Sequencing (locked)
+**Build the complete project → Deploy it → Update resume/portfolio → Deeply learn the complete system.**
+
+Implementation is never blocked on mastering theory first. Give only the minimum explanation needed for the current task; deeper material goes in `LEARNING_NOTES.md` for later. This changes pacing only — documentation honesty, review discipline, and scope control below are unchanged.
+
 ## Tool division
+**Claude:** architecture, planning, technical decisions, documentation, learning notes, design review, code review, implementation guidance, spotting architectural problems, interview prep, scope alignment. Updates project documentation directly where possible.
 
-**Claude** owns: architecture, project planning, documentation, technical decisions, learning explanations, implementation specifications, code review, debugging analysis, interview preparation, identifying architectural problems, maintaining project documentation.
+**Antigravity:** reads repo docs, implements tasks from `TASKS.md`, writes code and tests, runs tests, debugs, updates task status, reports changes, stops after the assigned task.
 
-**Google Antigravity** owns: implementing code, modifying repository files, writing tests, running tests, fixing implementation errors, updating task status, implementing only the currently assigned task.
-
-Claude and Antigravity do not talk to each other directly — they communicate **through the SourceX repository**. The repository is the source of truth. Anything that matters must eventually live in `docs/` or in the code itself, not only in a chat transcript.
+## Workflow
+```
+Claude: architecture / task definition
+  ↓
+Repository documentation (source of truth)
+  ↓
+Antigravity: implementation → tests → TASKS.md update
+  ↓
+Claude: review / corrections / next task
+  ↓ repeat
+```
+No two independent implementations, no conflicting architectures between Claude and Antigravity.
 
 ## One task at a time
+Every task in `TASKS.md` is small, independently verifiable, and carries: objective, dependencies, files/components, acceptance criteria, required tests, and a definition of done. Never "build the entire RAG system" as a task. Don't unnecessarily modify a completed task unless a real defect is found — T001–T003 stand as-is.
 
-Antigravity is never instructed to "build SourceX" or "build phase 3." It is given exactly one task from `TASKS.md`, scoped to specific files, with an explicit verification step. If a task can't be described that precisely, it's too big — split it.
-
-## No hidden mechanics
-
-If a framework provides a helper that collapses multiple steps (e.g. a `create_rag_chain()`-style call, or a LangGraph prebuilt), the underlying steps must still be understood and, ideally, documented in `LEARNING_NOTES.md`:
-1. What it is
-2. Why it is needed
-3. How it works
-4. Where it fits in SourceX
-5. What alternatives exist
-6. What trade-offs exist
-7. How to explain it in an interview
-
-## No scope creep
-
-Don't add a technology, phase, or feature because it looks impressive on a resume. Every addition needs a concrete technical reason tied to the PRD. Kubernetes, multi-agent swarms, fine-tuning, multiple LLM providers/vector DBs, and similar are explicitly out of scope for the MVP — see `PRD.md`.
+## Scope control
+Avoid unless genuinely required: Kubernetes, microservices, distributed systems, GPU infrastructure, multiple vector databases, multiple LLM providers, large local models, complex agent swarms, excessive tools, enterprise observability, unnecessary cloud services. Every addition needs a concrete technical reason. The project must stay explainable in an interview.
 
 ## Documentation honesty
+Never document a feature as done if it isn't. Docs reflect actual repository state. Never claim a capability (e.g. "LangGraph integrated") that isn't genuinely wired into the runtime — installed-but-unused is not integrated.
 
-Never document a feature as completed if it hasn't been implemented. Documentation should reflect the actual state of the repository, not the intended future state. Keep terminology consistent across documents.
+## Review standard
+Check: correctness, tests, maintainability, architecture consistency, security, unnecessary complexity, explainability, whether the task's acceptance criteria are actually met. Prefer simple-and-correct over impressive-and-complicated. On a problem: (1) explain the issue, (2) explain why it matters, (3) give a precise correction task.
 
-## Review loop
-
-After Antigravity completes a task, Claude reviews for:
-- implementation correctness
-- architecture fit
-- tests
-- maintainability
-- security
-- performance
-- unnecessary complexity
-- whether the concept is actually understood (not just working)
-
-If something is wrong, the review must: (1) explain the issue, (2) explain why it matters, (3) produce a precise correction task for Antigravity.
-
-## Focus discipline
-
-Work stays scoped to the current phase/day. If the current work is PDF extraction, don't start designing the full LangGraph system. If the current work is embeddings, stay on embeddings. See `IMPLEMENTATION_PLAN.md` for what "current" means at any point.
+## Security discipline
+Every protected document operation verifies `authenticated_user_id` owns `requested_document_id`, server-side, before proceeding — never trust an ID alone. Secrets via environment variables only, never in code or sent to the frontend.
 
 ## Task tracking
-
-`docs/TASKS.md` is the live task list. Tasks are small and independently verifiable (e.g. `T001 Repository foundation`, `T002 PDF extraction`). Status is updated as work completes.
+`docs/TASKS.md`, organized into Phases 1–10, is the live handoff to Antigravity.
