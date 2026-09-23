@@ -37,7 +37,11 @@ Entry format once expanded: (1) what it is, (2) why SourceX needs it, (3) how th
   - *Model:* `gemini-embedding-2` with 768 dimensions. We encode chunks as "title: none | text: {chunk_text}" as required by the model.
   - *Architecture:* Created `src/sourcex/retrieval/embeddings.py` mapping `Chunk` to a new `EmbeddedChunk` dataclass. Used mocking in tests to prevent live API calls.
   - *Error Handling:* Caught raw `google.genai.errors.APIError` and wrapped it in a custom `EmbeddingError` so the rest of the application doesn't bleed SDK details.
-- T007–T009 — FAISS, retrieval, basic generation mechanics
+- **T007 FAISS Indexing:**
+  - *Vector Engine:* Implemented exact search using `faiss-cpu` and `IndexFlatIP`. Inner Product on normalized Gemini embeddings provides exact cosine-similarity ranking.
+  - *ID Mapping:* Wrapped FAISS with `IndexIDMap` to link FAISS integer IDs to our unmodified `Chunk` metadata dictionaries.
+  - *Persistence:* Created `.faiss` and `metadata.json` for local development serialization. Production architecture will rely on rebuilding this cache from durable Postgres/R2 storage because of ephemeral environments.
+- T008–T009 — retrieval, basic generation mechanics
 - T010 — LangChain component-by-component mapping to the manual T001–T009 steps
 - T011–T017 — LangGraph state/nodes/conditional edges/loop termination, tool calling
 - T018 — evaluation results and what they show

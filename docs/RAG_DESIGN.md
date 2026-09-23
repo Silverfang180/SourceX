@@ -26,14 +26,15 @@ Owns the retrieval-side design decisions referenced from `ARCHITECTURE.md`. Fill
 - Error Handling: All `APIError` exceptions from the provider are caught and wrapped into a domain-specific `EmbeddingError`.
 - Limitations: API rate limits and network latency. Mocks are used for unit tests to prevent network dependency.
 
-## Vector index & persistence strategy (T007) — important
+## Vector index & persistence strategy (T007)
 Render's local filesystem is **ephemeral** — anything written to disk can vanish on restart/redeploy. FAISS itself has no built-in remote persistence, so the index cannot be treated as permanent local state.
 
-**Chosen approach (to confirm at T007/T023):**
-- Chunk text + metadata + embeddings are the durable source of truth, persisted in PostgreSQL (Supabase) and/or alongside the PDF in Cloudflare R2 — not only in the FAISS index file.
-- The FAISS index itself is treated as a **rebuildable cache**: built in memory (or on ephemeral disk) at app startup or on first query per document, from the persisted embeddings.
+**Implemented approach (T007):**
+- Uses `faiss-cpu` with `IndexFlatIP` (exact inner-product search, acting as cosine similarity for normalized embeddings).
+- Uses `IndexIDMap` to map FAISS IDs back to original unmodified `Chunk` metadata in a standard Python dictionary.
+- Supports local development persistence via `.faiss` and `metadata.json` files.
+- The production FAISS index is designed to be a **rebuildable cache**: built in memory at app startup or on first query from persisted embeddings.
 - This avoids introducing a hosted vector database purely to solve a deployment quirk — FAISS stays the retrieval engine; only its persistence story changes.
-- Trade-off: rebuild adds latency on cold start — acceptable for a portfolio-scale MVP; would need revisiting only if this became a real, high-traffic product.
 
 ## Retrieval (T008)
 - Top-K similarity search; TBD: K value and similarity metric (cosine vs. L2), to be recorded once implemented.

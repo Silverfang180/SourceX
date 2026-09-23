@@ -56,7 +56,7 @@ Status: `[ ]` not started · `[~]` in progress · `[x]` done. One task at a time
 - **Tests:** Mocked API test confirming call shape and output handling; graceful handling of an API error/rate limit.
 - **DoD:** Tests pass; failure handling documented.
 
-### [ ] T007 FAISS indexing
+### [x] T007 FAISS indexing
 - **Objective:** Build and persist a FAISS index from chunk embeddings.
 - **Dependencies:** T006.
 - **Files:** `src/sourcex/retrieval/index.py`.
